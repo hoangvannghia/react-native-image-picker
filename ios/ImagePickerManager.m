@@ -173,6 +173,7 @@ RCT_EXPORT_METHOD(launchImageLibrary:(NSDictionary *)options callback:(RCTRespon
     asset[@"fileName"] = fileName;
     asset[@"width"] = @(newImage.size.width);
     asset[@"height"] = @(newImage.size.height);
+    asset[@"response"] = [self getOriginalRotationDegrees:newImage].integerValue;
     
     if(phAsset){
         asset[@"timestamp"] = [self getDateTimeInUTC:phAsset.creationDate];
@@ -182,6 +183,27 @@ RCT_EXPORT_METHOD(launchImageLibrary:(NSDictionary *)options callback:(RCTRespon
     
     return asset;
 }
+
+- (NSNumber *)getOriginalRotationDegrees:(UIImage *)srcImg {
+     NSNumber *result = [NSNumber numberWithInteger:0];
+
+     switch (srcImg.imageOrientation) {
+         case UIImageOrientationLeft:
+         case UIImageOrientationLeftMirrored:
+             result = [NSNumber numberWithInteger:90];
+             break;
+         case UIImageOrientationDown:
+         case UIImageOrientationDownMirrored:
+             result = [NSNumber numberWithInteger:180];
+             break;
+         case UIImageOrientationRight:
+         case UIImageOrientationRightMirrored:
+             result = [NSNumber numberWithInteger:270];
+             break;
+     }
+
+     return result;
+ }
 
 -(NSMutableDictionary *)mapVideoToAsset:(NSURL *)url phAsset:(PHAsset * _Nullable)phAsset error:(NSError **)error {
     NSString *fileName = [url lastPathComponent];
